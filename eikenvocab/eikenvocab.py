@@ -3,7 +3,7 @@ import pytesseract
 import sys
 import pathlib
 import tempfile
-from pdf2image import convert_from_path
+import pdf2image
 import os
 import re
 from collections import Counter
@@ -13,15 +13,30 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # 1 - Convert PDFs to images
-def convert_pdfs(
+def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
 ) -> str:
     print(input_path)
+    output_str = ""
     filelist = input_path.glob("*.pdf")
     for file in filelist:
         # because path is object not string
         path_in_str = str(file)
         print(path_in_str)
+        with tempfile.TemporaryDirectory() as output_path:
+            pages = pdf2image.convert_from_path(
+                file, dpi=500, output_folder=output_path
+            )
+            print(type(pages))
+            # the first and last pages have no English, so drop them
+            pages = pages[1:-1]
+            pagenum = 1
+            for page in pages:
+                print(type(page))
+                print(pagenum)
+                pagenum += 1
+                output_str += pytesseract.image_to_string(page)
+    return output_str
 
 
 # 2 - OCR images to text
@@ -44,4 +59,5 @@ def convert_pdfs(
 
 
 if __name__ == "__main__":
-    convert_pdfs()
+    with open("output.txt", "w") as opened_file:
+        opened_file.write(pdfs_to_string())
