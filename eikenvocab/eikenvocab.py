@@ -16,6 +16,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 # 2 - OCR images to text
 def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
+    drop_first_and_last_pages: bool = True,
 ) -> str:
     output_string = ""
     filelist = input_path.glob("*.pdf")
@@ -24,8 +25,9 @@ def pdfs_to_string(
             pages = pdf2image.convert_from_path(
                 file, dpi=500, output_folder=output_path
             )
-            # the first and last pages have no English, so drop them
-            pages = pages[1:-1]
+            if drop_first_and_last_pages:
+                # the first and last pages have no English, so drop them
+                pages = pages[1:-1]
             for page in pages:
                 output_string += pytesseract.image_to_string(page)
     return output_string
