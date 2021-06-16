@@ -38,9 +38,41 @@ def string_to_words(string: str) -> list[str]:
     words = re.findall(r"[A-Za-z']+", string.lower())
     return words
 
-# 4 - Clean up list of words
 
-# 5 - Count word frequency
+# 4 - Clean up list of words
+# 4a - Remove single-character elements from the list
+def remove_single_character_elements(words: list) -> str:
+    words = [word for word in words if len(word) > 1]
+    return words
+
+
+# 4b - Check against English spellcheck dictionaries
+#       to remove elements which are not words
+def filter_by_spellcheck(words: list) -> list:
+    en_dictionary = enchant.Dict("en")
+    us_dictionary = enchant.Dict("en_US")
+    gb_dictionary = enchant.Dict("en_GB")
+    ca_dictionary = enchant.Dict("en_CA")
+    au_dictionary = enchant.Dict("en_AU")
+    words = [
+        word
+        for word in words
+        if en_dictionary.check(word)
+        or us_dictionary.check(word)
+        or gb_dictionary.check(word)
+        or ca_dictionary.check(word)
+        or au_dictionary.check(word)
+    ]
+    return words
+
+
+def clean_wordlist(words: list) -> list:
+    words = remove_single_character_elements(words)
+    words = filter_by_spellcheck(words)
+    return words
+
+
+# 5 - Make list of most frequent words
 
 # 6 - Transliterate English words with katakana
 
@@ -51,10 +83,14 @@ def string_to_words(string: str) -> list[str]:
 # 9 - Output to CSV?
 
 # 10 - Output to Google Sheet (new worksheet)
+# 10a - move "main" sheet to "backup-<date>"
+# 10b - Create new "main" sheet to use for output
 
 
 if __name__ == "__main__":
     # with open("output.txt", "w") as opened_file:
     #     opened_file.write(pdfs_to_string())
+
     words = string_to_words(pdfs_to_string())
-    print(*words, sep = ", ")
+    words = clean_wordlist(words)
+    print(*words, sep=", ")
