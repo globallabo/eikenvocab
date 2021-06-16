@@ -34,6 +34,9 @@ def pdfs_to_string(
 
 
 # 3 - Make list of all words
+def string_to_words(string: str) -> list[str]:
+    words = re.findall(r"[A-Za-z']+", string.lower())
+    return words
 
 # 4 - Clean up list of words
 
@@ -51,5 +54,7 @@ def pdfs_to_string(
 
 
 if __name__ == "__main__":
-    with open("output.txt", "w") as opened_file:
-        opened_file.write(pdfs_to_string())
+    # with open("output.txt", "w") as opened_file:
+    #     opened_file.write(pdfs_to_string())
+    words = string_to_words(pdfs_to_string())
+    print(*words, sep = ", ")
