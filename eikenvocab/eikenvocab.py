@@ -73,6 +73,10 @@ def clean_wordlist(words: list) -> list:
 
 
 # 5 - Make list of most frequent words
+def get_most_frequent_words(words: list) -> list:
+    words = Counter(words).most_common(1000)
+    return words
+
 
 # 6 - Transliterate English words with katakana
 
@@ -93,4 +97,5 @@ if __name__ == "__main__":
 
     words = string_to_words(pdfs_to_string())
     words = clean_wordlist(words)
+    words = get_most_frequent_words(words)
     print(*words, sep=", ")
