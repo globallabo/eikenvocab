@@ -91,74 +91,6 @@ def get_most_frequent_words(words: list, limit: int = 1000) -> list:
 
 # 6 - Transliterate English words with katakana
 def english_to_katakana(word: str) -> str:
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
-    # }
-    # url = f"https://www.sljfaq.org/cgi/e2k.cgi?word={word}"
-    # response = requests.get(url, headers=headers)
-    # # print(response.content)
-    # soup = BeautifulSoup(response.content, "html.parser")
-    # katakana_pronunciation = soup.select_one("#katakana-string").text.strip()
-    # headers = {
-    #     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
-    # }
-    # url = f"https://japanga.com/name-converter#?q={word}"
-    # response = requests.get(url, headers=headers)
-    # # print(response.content)
-    # soup = BeautifulSoup(response.content, "html.parser")
-    # katakana_pronunciation = soup.select_one(".name-katakana").text.strip()
-    url = f"https://japanga.com/name-converter#?q={word}"
-    max_delay = 10
-    chrome_options = Options()
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-gpu")
-    chrome_options.add_argument("--disable-setuid-sandbox")
-    chrome_options.add_argument("--single-process")
-    chrome_options.add_argument("--window-size=1920,1080")
-    # webdriver_path = "/usr/bin/chromedriver"
-    driver = webdriver.Chrome(options=chrome_options)
-    # driver.implicitly_wait(20)
-    driver.get(url)
-    try:
-        katakana_pronunciation = (
-            WebDriverWait(driver, max_delay)
-            .until(EC.visibility_of_element_located((By.CLASS_NAME, "nc-katakana")))
-            .text
-        )
-    except TimeoutException:
-        print(f"Selenium timed out on {word}")
-        katakana_pronunciation = "timeout"
-    finally:
-        driver.quit()
-    return katakana_pronunciation
-
-
-# Test using tophonetics
-def english_to_katakana2(word: str) -> str:
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
-    }
-    url = "https://tophonetics.com/ja/"
-    mydata = {
-        "text_to_transcribe": word,
-        "native": True,
-        "output_dialect": "am",
-        "submit": "変換",
-    }
-
-    try:
-        response = requests.post(url, data=mydata, headers=headers)
-        soup = BeautifulSoup(response.content, "html.parser")
-        katakana_pronunciation = soup.select_one(".transcribed_word").text
-    except AttributeError:
-        katakana_pronunciation = "none"
-    return katakana_pronunciation
-
-
-# Test using freeenglish
-def english_to_katakana3(word: str) -> str:
     url = "https://freeenglish.jp/convertp.php"
     mydata = {"englishtext": word, "prontype": "kana"}
 
@@ -240,15 +172,8 @@ if __name__ == "__main__":
         # print(wordcount)
         # print(type(wordcount))
         word, count = wordcount
-        transliteration1 = english_to_katakana(word)
-        transliteration2 = english_to_katakana2(word)
-        transliteration3 = english_to_katakana3(word)
-        worddict = {
-            "word": word,
-            "site1": transliteration1,
-            "site2": transliteration2,
-            "site3": transliteration3,
-        }
+        transliteration = english_to_katakana(word)
+        worddict = {"word": word, "transliteration": transliteration}
         wordlist.append(worddict)
 
         # translation = english_to_japanese(word)
@@ -256,9 +181,7 @@ if __name__ == "__main__":
         # print(
         #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
         # )
-        print(
-            f"Word: {word}, Transliteration 1: {transliteration1}, Transliteration 2: {transliteration2}, Transliteration 3: {transliteration3},"
-        )
+        print(f"Word: {word}, Transliteration: {transliteration}")
     # print(*words, sep=", ")
     print(len(words))
     write_gsheet(wordlist)
