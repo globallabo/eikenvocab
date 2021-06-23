@@ -10,6 +10,7 @@ from collections import Counter
 import csv
 import enchant
 import gspread
+from gspread.models import Cell
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
 import requests
@@ -19,6 +20,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 import pykakasi
 
 # 1 - Convert PDFs to images
@@ -125,8 +127,47 @@ def english_to_katakana(word: str) -> str:
             .until(EC.visibility_of_element_located((By.CLASS_NAME, "nc-katakana")))
             .text
         )
+    except TimeoutException:
+        print(f"Selenium timed out on {word}")
+        katakana_pronunciation = "timeout"
     finally:
         driver.quit()
+    return katakana_pronunciation
+
+
+# Test using tophonetics
+def english_to_katakana2(word: str) -> str:
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36",
+    }
+    url = "https://tophonetics.com/ja/"
+    mydata = {
+        "text_to_transcribe": word,
+        "native": True,
+        "output_dialect": "am",
+        "submit": "変換",
+    }
+
+    try:
+        response = requests.post(url, data=mydata, headers=headers)
+        soup = BeautifulSoup(response.content, "html.parser")
+        katakana_pronunciation = soup.select_one(".transcribed_word").text
+    except AttributeError:
+        katakana_pronunciation = "none"
+    return katakana_pronunciation
+
+
+# Test using freeenglish
+def english_to_katakana3(word: str) -> str:
+    url = "https://freeenglish.jp/convertp.php"
+    mydata = {"englishtext": word, "prontype": "kana"}
+
+    try:
+        response = requests.post(url, data=mydata)
+        soup = BeautifulSoup(response.content, "html.parser")
+        katakana_pronunciation = soup.select_one(".kana").text
+    except AttributeError:
+        katakana_pronunciation = "none"
     return katakana_pronunciation
 
 
@@ -147,29 +188,77 @@ def japanese_to_hiragana(word: str) -> str:
 # 9 - Output to CSV?
 
 # 10 - Output to Google Sheet (new worksheet)
-# 10a - move "main" sheet to "backup-<date>"
-# 10b - Create new "main" sheet to use for output
+# 10a - TODO - move "main" sheet to "backup-<date>"
+# 10b - TODO - Create new "main" sheet to use for output
+def write_gsheet(wordlist: list[dict]):
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive",
+    ]
+    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    client = gspread.authorize(creds)
+    vocabsheet = client.open("Eiken Vocabulary")
+    worksheet = vocabsheet.add_worksheet(
+        title="transliteration_test", rows="110", cols="20"
+    )
+    worksheet.update("A1", "Word")
+    worksheet.update("B1", "Site 1")
+    worksheet.update("C1", "Site 2")
+    worksheet.update("D1", "Site 3")
+    worksheet.format("A1:D1", {"textFormat": {"bold": True}})
+
+    # use a list to contain gspread Cell objects, which can be batch written
+    cells = []
+    row = 2
+    for word in wordlist:
+        column = 1
+        for value in word.values():
+            print(f"Row: {row}, Column: {column}, Value: {value}")
+            print(type(value))
+            cells.append(Cell(row=row, col=column, value=value))
+            # worksheet.update_cell(row, column, value)
+            column += 1
+        row += 1
+    # write in a batch
+    worksheet.update_cells(cells)
 
 
 if __name__ == "__main__":
     # with open("output.txt", "w") as opened_file:
     #     opened_file.write(pdfs_to_string())
 
-    # words = string_to_words(pdfs_to_string())
-    # words = clean_wordlist(words)
-    # words = get_most_frequent_words(words)
-    words = [("mail", 1), ("sell", 1), ("something", 1), ("pet", 1), ("fever", 1)]
-    print(len(words))
-    print(type(words))
+    words = string_to_words(pdfs_to_string())
+    words = clean_wordlist(words)
+    words = get_most_frequent_words(words, 100)
+    # words = [("mail", 1), ("sell", 1), ("something", 1), ("pet", 1), ("fever", 1)]
+    wordlist = []
+    # print(len(words))
+    # print(type(words))
     for wordcount in words:
-        print(wordcount)
-        print(type(wordcount))
+        # print(wordcount)
+        # print(type(wordcount))
         word, count = wordcount
-        transliteration = english_to_katakana(word)
-        translation = english_to_japanese(word)
-        hiragana = japanese_to_hiragana(translation)
+        transliteration1 = english_to_katakana(word)
+        transliteration2 = english_to_katakana2(word)
+        transliteration3 = english_to_katakana3(word)
+        worddict = {
+            "word": word,
+            "site1": transliteration1,
+            "site2": transliteration2,
+            "site3": transliteration3,
+        }
+        wordlist.append(worddict)
+
+        # translation = english_to_japanese(word)
+        # hiragana = japanese_to_hiragana(translation)
+        # print(
+        #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
+        # )
         print(
-            f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
+            f"Word: {word}, Transliteration 1: {transliteration1}, Transliteration 2: {transliteration2}, Transliteration 3: {transliteration3},"
         )
     # print(*words, sep=", ")
     print(len(words))
+    write_gsheet(wordlist)
