@@ -15,13 +15,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
 import requests
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 import pykakasi
+import jaconv
+
 
 # 1 - Convert PDFs to images
 # 2 - OCR images to text
@@ -114,7 +110,13 @@ def english_to_japanese(word: str) -> str:
 def japanese_to_hiragana(word: str) -> str:
     kks = pykakasi.kakasi()
     transliterationresult = kks.convert(word)
-    return transliterationresult[0]["hira"]
+    # the above result is tokenized by what kakasi thinks are
+    #  the words in the Japanese string, so we need to loop
+    #  through the result and concatenate the words
+    hiragana = ""
+    for item in transliterationresult:
+        hiragana = hiragana + item["hira"]
+    return hiragana
 
 
 # 9 - Output to CSV?
@@ -136,10 +138,9 @@ def write_gsheet(wordlist: list[dict]):
         title="transliteration_test", rows="110", cols="20"
     )
     worksheet.update("A1", "Word")
-    worksheet.update("B1", "Site 1")
-    worksheet.update("C1", "Site 2")
-    worksheet.update("D1", "Site 3")
-    worksheet.format("A1:D1", {"textFormat": {"bold": True}})
+    worksheet.update("B1", "Katakana")
+    worksheet.update("C1", "Hiragana")
+    worksheet.format("A1:C1", {"textFormat": {"bold": True}})
 
     # use a list to contain gspread Cell objects, which can be batch written
     cells = []
@@ -161,10 +162,21 @@ if __name__ == "__main__":
     # with open("output.txt", "w") as opened_file:
     #     opened_file.write(pdfs_to_string())
 
-    words = string_to_words(pdfs_to_string())
-    words = clean_wordlist(words)
-    words = get_most_frequent_words(words, 100)
-    # words = [("mail", 1), ("sell", 1), ("something", 1), ("pet", 1), ("fever", 1)]
+    # words = string_to_words(pdfs_to_string())
+    # words = clean_wordlist(words)
+    # words = get_most_frequent_words(words, 100)
+    words = [
+        ("mail", 1),
+        ("sell", 1),
+        ("something", 1),
+        ("pet", 1),
+        ("fever", 1),
+        ("there", 1),
+        ("father", 1),
+        ("your", 1),
+        ("here", 1),
+        ("afternoon", 1),
+    ]
     wordlist = []
     # print(len(words))
     # print(type(words))
@@ -172,16 +184,25 @@ if __name__ == "__main__":
         # print(wordcount)
         # print(type(wordcount))
         word, count = wordcount
-        transliteration = english_to_katakana(word)
-        worddict = {"word": word, "transliteration": transliteration}
+        transliteration_kata = english_to_katakana(word)  # Katakana to Hiragana
+        transliteration_hira = jaconv.kata2hira(transliteration_kata)
+        translation_kanji = english_to_japanese(word)
+        translation_hiragana = japanese_to_hiragana(translation_kanji)
+        worddict = {
+            "word": word,
+            "transliteration_kata": transliteration_kata,
+            "transliteration_hira": transliteration_hira,
+            "translation_kanji": translation_kanji,
+            "translation_hiragana": translation_hiragana,
+        }
         wordlist.append(worddict)
 
-        # translation = english_to_japanese(word)
-        # hiragana = japanese_to_hiragana(translation)
         # print(
         #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
         # )
-        print(f"Word: {word}, Transliteration: {transliteration}")
+        print(
+            f"Word: {word}, Transliteration (Katakana): {transliteration_hira}, Transliteration (Hiragana): {transliteration_kata}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
+        )
     # print(*words, sep=", ")
     print(len(words))
     write_gsheet(wordlist)
