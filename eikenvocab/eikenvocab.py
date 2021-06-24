@@ -135,7 +135,7 @@ def write_gsheet(wordlist: list[dict]):
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
     worksheet = vocabsheet.add_worksheet(
-        title="transliteration_test", rows="110", cols="20"
+        title="transliteration-translation-test", rows="110", cols="20"
     )
     worksheet.update("A1", "Word")
     worksheet.update("B1", "Katakana")
@@ -175,7 +175,37 @@ if __name__ == "__main__":
         ("father", 1),
         ("your", 1),
         ("here", 1),
-        ("afternoon", 1),
+        ("be", 1),
+        ("is", 1),
+        ("are", 1),
+        ("was", 1),
+        ("being", 1),
+        ("been", 1),
+        ("go", 1),
+        ("goes", 1),
+        ("going", 1),
+        ("went", 1),
+        ("gone", 1),
+        ("have", 1),
+        ("has", 1),
+        ("having", 1),
+        ("had", 1),
+        ("walk", 1),
+        ("walks", 1),
+        ("walking", 1),
+        ("walked", 1),
+        ("work", 1),
+        ("works", 1),
+        ("working", 1),
+        ("worked", 1),
+        ("take", 1),
+        ("takes", 1),
+        ("taking", 1),
+        ("took", 1),
+        ("help", 1),
+        ("helps", 1),
+        ("helping", 1),
+        ("helped", 1),
     ]
     wordlist = []
     # print(len(words))
