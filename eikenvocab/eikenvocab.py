@@ -135,12 +135,14 @@ def write_gsheet(wordlist: list[dict]):
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
     worksheet = vocabsheet.add_worksheet(
-        title="transliteration-translation-test", rows="110", cols="20"
+        title="transliteration-translation-grade5", rows="1000", cols="20"
     )
     worksheet.update("A1", "Word")
-    worksheet.update("B1", "Katakana")
-    worksheet.update("C1", "Hiragana")
-    worksheet.format("A1:C1", {"textFormat": {"bold": True}})
+    worksheet.update("B1", "Pronunciation (Katakana)")
+    worksheet.update("C1", "Pronunciation (Hiragana)")
+    worksheet.update("D1", "Translation (Kanji)")
+    worksheet.update("E1", "Translation (Kanji)")
+    worksheet.format("A1:E1", {"textFormat": {"bold": True}})
 
     # use a list to contain gspread Cell objects, which can be batch written
     cells = []
@@ -159,54 +161,51 @@ def write_gsheet(wordlist: list[dict]):
 
 
 if __name__ == "__main__":
-    # with open("output.txt", "w") as opened_file:
-    #     opened_file.write(pdfs_to_string())
-
-    # words = string_to_words(pdfs_to_string())
-    # words = clean_wordlist(words)
-    # words = get_most_frequent_words(words, 100)
-    words = [
-        ("mail", 1),
-        ("sell", 1),
-        ("something", 1),
-        ("pet", 1),
-        ("fever", 1),
-        ("there", 1),
-        ("father", 1),
-        ("your", 1),
-        ("here", 1),
-        ("be", 1),
-        ("is", 1),
-        ("are", 1),
-        ("was", 1),
-        ("being", 1),
-        ("been", 1),
-        ("go", 1),
-        ("goes", 1),
-        ("going", 1),
-        ("went", 1),
-        ("gone", 1),
-        ("have", 1),
-        ("has", 1),
-        ("having", 1),
-        ("had", 1),
-        ("walk", 1),
-        ("walks", 1),
-        ("walking", 1),
-        ("walked", 1),
-        ("work", 1),
-        ("works", 1),
-        ("working", 1),
-        ("worked", 1),
-        ("take", 1),
-        ("takes", 1),
-        ("taking", 1),
-        ("took", 1),
-        ("help", 1),
-        ("helps", 1),
-        ("helping", 1),
-        ("helped", 1),
-    ]
+    words = string_to_words(pdfs_to_string())
+    words = clean_wordlist(words)
+    words = get_most_frequent_words(words)
+    # words = [
+    #     ("mail", 1),
+    #     ("sell", 1),
+    #     ("something", 1),
+    #     ("pet", 1),
+    #     ("fever", 1),
+    #     ("there", 1),
+    #     ("father", 1),
+    #     ("your", 1),
+    #     ("here", 1),
+    #     ("be", 1),
+    #     ("is", 1),
+    #     ("are", 1),
+    #     ("was", 1),
+    #     ("being", 1),
+    #     ("been", 1),
+    #     ("go", 1),
+    #     ("goes", 1),
+    #     ("going", 1),
+    #     ("went", 1),
+    #     ("gone", 1),
+    #     ("have", 1),
+    #     ("has", 1),
+    #     ("having", 1),
+    #     ("had", 1),
+    #     ("walk", 1),
+    #     ("walks", 1),
+    #     ("walking", 1),
+    #     ("walked", 1),
+    #     ("work", 1),
+    #     ("works", 1),
+    #     ("working", 1),
+    #     ("worked", 1),
+    #     ("take", 1),
+    #     ("takes", 1),
+    #     ("taking", 1),
+    #     ("took", 1),
+    #     ("help", 1),
+    #     ("helps", 1),
+    #     ("helping", 1),
+    #     ("helped", 1),
+    # ]
     wordlist = []
     # print(len(words))
     # print(type(words))
