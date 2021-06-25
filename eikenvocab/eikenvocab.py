@@ -134,14 +134,12 @@ def write_gsheet(wordlist: list[dict]):
     creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
-    worksheet = vocabsheet.add_worksheet(
-        title="transliteration-translation-grade5", rows="1000", cols="20"
-    )
+    worksheet = vocabsheet.add_worksheet(title="grade5", rows="1000", cols="20")
     worksheet.update("A1", "Word")
     worksheet.update("B1", "Pronunciation (Katakana)")
     worksheet.update("C1", "Pronunciation (Hiragana)")
     worksheet.update("D1", "Translation (Kanji)")
-    worksheet.update("E1", "Translation (Kanji)")
+    worksheet.update("E1", "Translation (Hiragana)")
     worksheet.format("A1:E1", {"textFormat": {"bold": True}})
 
     # use a list to contain gspread Cell objects, which can be batch written
