@@ -42,6 +42,7 @@ def pdfs_to_string(
 
 # 3 - Make list of all words
 def string_to_words(string: str) -> list[str]:
+    string = string.replace("’", "'")
     words = re.findall(r"[A-Za-z']+", string.lower())
     return words
 
