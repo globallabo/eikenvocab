@@ -25,6 +25,7 @@ def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
 ) -> str:
+    print("Starting PDF reading and OCR extraction ...")
     output_string = ""
     filelist = input_path.glob("*.pdf")
     for file in filelist:
@@ -37,6 +38,7 @@ def pdfs_to_string(
                 pages = pages[1:-1]
             for page in pages:
                 output_string += pytesseract.image_to_string(page)
+    print("Finished PDF reading and OCR extraction")
     return output_string
 
 
