@@ -17,6 +17,7 @@ import requests
 from bs4 import BeautifulSoup
 import pykakasi
 import jaconv
+import time
 
 
 # 1 - Convert PDFs to images
@@ -233,6 +234,8 @@ if __name__ == "__main__":
         print(
             f"Word: {word}, Transliteration (Katakana): {transliteration_hira}, Transliteration (Hiragana): {transliteration_kata}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
         )
+        # Necessary to prevent rate-limiting by the Google translate API
+        time.sleep(5)
     # print(*words, sep=", ")
     print(len(words))
     write_gsheet(wordlist)
