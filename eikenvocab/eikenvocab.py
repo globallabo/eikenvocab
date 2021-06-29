@@ -234,7 +234,7 @@ if __name__ == "__main__":
         #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
         # )
         print(
-            f"Word: {word}, Transliteration (Katakana): {transliteration_hira}, Transliteration (Hiragana): {transliteration_kata}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
+            f"Word: {word}, Transliteration (Katakana): {transliteration_kata}, Transliteration (Hiragana): {transliteration_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
         )
         # Necessary to prevent rate-limiting by the Google translate API
         time.sleep(5)
