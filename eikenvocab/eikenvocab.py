@@ -45,7 +45,9 @@ def pdfs_to_string(
 
 # 3 - Make list of all words
 def string_to_words(string: str) -> list[str]:
+    # the text results from the PDF often have a curly apostrophe, so replace it
     string = string.replace("’", "'")
+    # include any words made of letters and the apostrophe, for contractions
     words = re.findall(r"[A-Za-z']+", string.lower())
     return words
 
