@@ -1,5 +1,6 @@
 from PIL import Image
 import pytesseract
+import fitz
 import sys
 import pathlib
 import tempfile
@@ -22,24 +23,44 @@ import time
 
 # 1 - Convert PDFs to images
 # 2 - OCR images to text
+# def pdfs_to_string(
+#     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
+#     drop_first_and_last_pages: bool = True,
+# ) -> str:
+#     print("Starting PDF reading and OCR extraction ...")
+#     output_string = ""
+#     filelist = input_path.glob("*.pdf")
+#     for file in filelist:
+#         with tempfile.TemporaryDirectory() as output_path:
+#             pages = pdf2image.convert_from_path(
+#                 file, dpi=500, output_folder=output_path
+#             )
+#             if drop_first_and_last_pages:
+#                 # the first and last pages have no English, so drop them
+#                 pages = pages[1:-1]
+#             for page in pages:
+#                 output_string += pytesseract.image_to_string(page)
+#     print("Finished PDF reading and OCR extraction")
+#     return output_string
+
+
+# Try using the text layer in the PDF instead of OCR
 def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
 ) -> str:
-    print("Starting PDF reading and OCR extraction ...")
+    print("Starting PDF reading and text layer extraction ...")
     output_string = ""
     filelist = input_path.glob("*.pdf")
     for file in filelist:
         with tempfile.TemporaryDirectory() as output_path:
-            pages = pdf2image.convert_from_path(
-                file, dpi=500, output_folder=output_path
-            )
+            pages = fitz.open(file)
             if drop_first_and_last_pages:
-                # the first and last pages have no English, so drop them
-                pages = pages[1:-1]
+                selection = list(range(1, pages.pageCount - 1))
+                pages.select(selection)
             for page in pages:
-                output_string += pytesseract.image_to_string(page)
-    print("Finished PDF reading and OCR extraction")
+                output_string += page.get_text()
+    print("Finished PDF reading and text layer extraction")
     return output_string
 
 
@@ -154,8 +175,8 @@ def write_gsheet(wordlist: list[dict]):
     for word in wordlist:
         column = 1
         for value in word.values():
-            print(f"Row: {row}, Column: {column}, Value: {value}")
-            print(type(value))
+            # print(f"Row: {row}, Column: {column}, Value: {value}")
+            # print(type(value))
             cells.append(Cell(row=row, col=column, value=value))
             # worksheet.update_cell(row, column, value)
             column += 1
@@ -217,27 +238,28 @@ if __name__ == "__main__":
         # print(wordcount)
         # print(type(wordcount))
         word, count = wordcount
-        transliteration_kata = english_to_katakana(word)  # Katakana to Hiragana
-        transliteration_hira = jaconv.kata2hira(transliteration_kata)
-        translation_kanji = english_to_japanese(word)
-        translation_hiragana = japanese_to_hiragana(translation_kanji)
+        # transliteration_kata = english_to_katakana(word)  # Katakana to Hiragana
+        # transliteration_hira = jaconv.kata2hira(transliteration_kata)
+        # translation_kanji = english_to_japanese(word)
+        # translation_hiragana = japanese_to_hiragana(translation_kanji)
         worddict = {
             "word": word,
-            "transliteration_kata": transliteration_kata,
-            "transliteration_hira": transliteration_hira,
-            "translation_kanji": translation_kanji,
-            "translation_hiragana": translation_hiragana,
+            "count": count,
+            # "transliteration_kata": transliteration_kata,
+            # "transliteration_hira": transliteration_hira,
+            # "translation_kanji": translation_kanji,
+            # "translation_hiragana": translation_hiragana,
         }
         wordlist.append(worddict)
 
         # print(
         #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
         # )
-        print(
-            f"Word: {word}, Transliteration (Katakana): {transliteration_kata}, Transliteration (Hiragana): {transliteration_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
-        )
+        # print(
+        #     f"Word: {word}, Transliteration (Katakana): {transliteration_kata}, Transliteration (Hiragana): {transliteration_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
+        # )
         # Necessary to prevent rate-limiting by the Google translate API
-        time.sleep(5)
+        # time.sleep(5)
     # print(*words, sep=", ")
     print(len(words))
     write_gsheet(wordlist)
