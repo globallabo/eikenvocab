@@ -45,6 +45,7 @@ import time
 
 
 # Try using the text layer in the PDF instead of OCR
+# TODO - remove tempfile stuff if not necessary
 def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
@@ -112,7 +113,7 @@ def get_most_frequent_words(words: list, limit: int = 1000) -> list:
     return words
 
 
-# 6 - Transliterate English words with katakana
+# 6 - Transliterate English words with katakana pronunciation
 def english_to_katakana(word: str) -> str:
     url = "https://freeenglish.jp/convertp.php"
     mydata = {"englishtext": word, "prontype": "kana"}
@@ -128,9 +129,12 @@ def english_to_katakana(word: str) -> str:
 
 # 7 - Translate English words to Japanese (google)
 def english_to_japanese(word: str) -> str:
-    translator = Translator()
-    translation = translator.translate(word, src="en", dest="ja")
-    return translation.text
+    # translator = Translator()
+    # translation = translator.translate(word, src="en", dest="ja")
+    # return translation.text
+
+    # Until we get the official Google Cloud Translate API working, return a placeholder
+    return "日本語"
 
 
 # 8 - Transliterate Japanese into hiragana, katakana, romaji
@@ -149,9 +153,9 @@ def japanese_to_hiragana(word: str) -> str:
 # 9 - Output to CSV?
 
 # 10 - Output to Google Sheet (new worksheet)
-# 10a - TODO - move "main" sheet to "backup-<date>"
-# 10b - TODO - Create new "main" sheet to use for output
-def write_gsheet(wordlist: list[dict]):
+# 10a - TODO - move "grade_X" sheet to "grade_X-backup-<date>"
+# 10b - TODO - Create new "grade_X" sheet to use for output
+def write_gsheet(wordlist: list[dict], grade: str):
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
@@ -161,7 +165,7 @@ def write_gsheet(wordlist: list[dict]):
     creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
-    worksheet = vocabsheet.add_worksheet(title="grade5", rows="1000", cols="20")
+    worksheet = vocabsheet.add_worksheet(title=f"grade_{grade}", rows="1000", cols="20")
     worksheet.update("A1", "Word")
     worksheet.update("B1", "Pronunciation (Katakana)")
     worksheet.update("C1", "Pronunciation (Hiragana)")
@@ -185,10 +189,7 @@ def write_gsheet(wordlist: list[dict]):
     worksheet.update_cells(cells)
 
 
-if __name__ == "__main__":
-    words = string_to_words(pdfs_to_string())
-    words = clean_wordlist(words)
-    words = get_most_frequent_words(words)
+def main():
     # words = [
     #     ("mail", 1),
     #     ("sell", 1),
@@ -231,35 +232,43 @@ if __name__ == "__main__":
     #     ("helping", 1),
     #     ("helped", 1),
     # ]
-    wordlist = []
-    # print(len(words))
-    # print(type(words))
-    for wordcount in words:
-        # print(wordcount)
-        # print(type(wordcount))
-        word, count = wordcount
-        # transliteration_kata = english_to_katakana(word)  # Katakana to Hiragana
-        # transliteration_hira = jaconv.kata2hira(transliteration_kata)
-        # translation_kanji = english_to_japanese(word)
-        # translation_hiragana = japanese_to_hiragana(translation_kanji)
-        worddict = {
-            "word": word,
-            "count": count,
-            # "transliteration_kata": transliteration_kata,
-            # "transliteration_hira": transliteration_hira,
-            # "translation_kanji": translation_kanji,
-            # "translation_hiragana": translation_hiragana,
-        }
-        wordlist.append(worddict)
 
-        # print(
-        #     f"Word: {word}, Count: {count}, Transliteration: {transliteration}, Translation: {translation}, Hiragana: {hiragana}"
-        # )
-        # print(
-        #     f"Word: {word}, Transliteration (Katakana): {transliteration_kata}, Transliteration (Hiragana): {transliteration_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
-        # )
-        # Necessary to prevent rate-limiting by the Google translate API
-        # time.sleep(5)
-    # print(*words, sep=", ")
-    print(len(words))
-    write_gsheet(wordlist)
+    # p2 and p1 are for Grades Pre-2 and Pre-1
+    grades = ["5", "4", "3", "p2", "2", "p1", "1"]
+    base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
+    for grade in grades:
+        input_path = base_path / f"grade_{grade}"
+        words = string_to_words(pdfs_to_string(input_path=input_path))
+        words = clean_wordlist(words)
+        words = get_most_frequent_words(words)
+        wordlist = []
+        for wordcount in words:
+            word, count = wordcount
+            pronunciation_kata = english_to_katakana(word)  # Katakana to Hiragana
+            pronunciation_hira = jaconv.kata2hira(pronunciation_kata)
+            translation_kanji = english_to_japanese(word)
+            translation_hiragana = japanese_to_hiragana(translation_kanji)
+            worddict = {
+                "word": word,
+                "count": count,
+                "pronunciation_kata": pronunciation_kata,
+                "pronunciation_hira": pronunciation_hira,
+                "translation_kanji": translation_kanji,
+                "translation_hiragana": translation_hiragana,
+            }
+            wordlist.append(worddict)
+
+            # print(
+            #     f"Word: {word}, Count: {count}, pronunciation: {pronunciation}, Translation: {translation}, Hiragana: {hiragana}"
+            # )
+            # print(
+            #     f"Word: {word}, pronunciation (Katakana): {pronunciation_kata}, pronunciation (Hiragana): {pronunciation_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
+            # )
+            # Necessary to prevent rate-limiting by the Google translate API
+            # time.sleep(5)
+        # print(*words, sep=", ")
+        write_gsheet(wordlist=wordlist, grade=grade)
+
+
+if __name__ == "__main__":
+    main()
