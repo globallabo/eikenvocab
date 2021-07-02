@@ -37,7 +37,7 @@ def scrape_eiken_tests(grades: list[str], base_path: str):
 def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
-    base_path = pathlib.Path(__file__).parent.parent.absolute() / f"data"
+    base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
     scrape_eiken_tests(grades=grades, base_path=base_path)
 
 
