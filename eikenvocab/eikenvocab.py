@@ -18,7 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 import pykakasi
 import jaconv
-import time
+from datetime import datetime
 
 
 # 1 - Convert PDFs to images
@@ -50,7 +50,7 @@ def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
 ) -> str:
-    print("Starting PDF reading and text layer extraction ...")
+    # print("Starting PDF reading and text layer extraction ...")
     output_string = ""
     filelist = input_path.glob("*.pdf")
     for file in filelist:
@@ -61,7 +61,7 @@ def pdfs_to_string(
                 pages.select(selection)
             for page in pages:
                 output_string += page.get_text()
-    print("Finished PDF reading and text layer extraction")
+    # print("Finished PDF reading and text layer extraction")
     return output_string
 
 
@@ -167,9 +167,27 @@ def write_gsheet(wordlist: list[dict], grade: str):
     creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
-    worksheet = vocabsheet.add_worksheet(
-        title=f"grade_{grade}", rows=max_rows, cols=max_cols
-    )
+    try:
+        worksheet = vocabsheet.add_worksheet(
+            title=f"grade_{grade}", rows=max_rows, cols=max_cols, index=0
+        )
+        print(f"Successfully added Grade {grade} sheet.")
+    except gspread.exceptions.APIError:
+        last_position = len(vocabsheet.worksheets()) - 1
+        print(f"Grade {grade} worksheet exists; backing up before creating ...")
+        backup_sheet_name = f"grade_{grade}-backup_" + datetime.now().strftime(
+            "%Y-%m-%d_%H.%M.%S"
+        )
+        vocabsheet.duplicate_sheet(
+            source_sheet_id=vocabsheet.worksheet(title=f"grade_{grade}").id,
+            new_sheet_name=backup_sheet_name,
+            insert_sheet_index=last_position,
+        )
+        vocabsheet.del_worksheet(vocabsheet.worksheet(title=f"grade_{grade}"))
+        worksheet = vocabsheet.add_worksheet(
+            title=f"grade_{grade}", rows=max_rows, cols=max_cols, index=0
+        )
+        print(f"Successfully added Grade {grade} sheet.")
     # Use the dictionary keys to create the header row
     for index, key in enumerate(wordlist[0]):
         worksheet.update_cell(row=1, col=index + 1, value=key)
@@ -237,10 +255,11 @@ def main():
     # ]
 
     # p2 and p1 are for Grades Pre-2 and Pre-1
-    # grades = ["5", "4", "3", "p2", "2", "p1", "1"]
-    grades = ["5"]
+    grades = ["5", "4", "3", "p2", "2", "p1", "1"]
+    # grades = ["5"]
     base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
     for grade in grades:
+        print(f"Starting Grade {grade} ...")
         input_path = base_path / f"grade_{grade}"
         words = string_to_words(pdfs_to_string(input_path=input_path))
         words = clean_wordlist(words)
@@ -272,6 +291,7 @@ def main():
             # time.sleep(5)
         # print(*words, sep=", ")
         write_gsheet(wordlist=wordlist, grade=grade)
+        print(f"Finished Grade {grade}.")
 
 
 if __name__ == "__main__":
