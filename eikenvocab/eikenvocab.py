@@ -45,7 +45,6 @@ from datetime import datetime
 
 
 # Try using the text layer in the PDF instead of OCR
-# TODO - remove tempfile stuff if not necessary
 def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
@@ -54,13 +53,12 @@ def pdfs_to_string(
     output_string = ""
     filelist = input_path.glob("*.pdf")
     for file in filelist:
-        with tempfile.TemporaryDirectory() as output_path:
-            pages = fitz.open(file)
-            if drop_first_and_last_pages:
-                selection = list(range(1, pages.pageCount - 1))
-                pages.select(selection)
-            for page in pages:
-                output_string += page.get_text()
+        pages = fitz.open(file)
+        if drop_first_and_last_pages:
+            selection = list(range(1, pages.pageCount - 1))
+            pages.select(selection)
+        for page in pages:
+            output_string += page.get_text()
     # print("Finished PDF reading and text layer extraction")
     return output_string
 
