@@ -150,11 +150,7 @@ def japanese_to_hiragana(word: str) -> str:
     return hiragana
 
 
-# 9 - Output to CSV?
-
-# 10 - Output to Google Sheet (new worksheet)
-# 10a - TODO - move "grade_X" sheet to "grade_X-backup-<date>"
-# 10b - TODO - Create new "grade_X" sheet to use for output
+# 9 - Output to Google Sheet (new worksheet)
 def write_gsheet(wordlist: list[dict], grade: str):
     max_rows = len(wordlist) + 10
     max_cols = len(wordlist[0]) + 2
