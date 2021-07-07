@@ -14,6 +14,7 @@ import gspread
 from gspread.models import Cell
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
+from google.cloud import translate_v2 as translate
 import requests
 from bs4 import BeautifulSoup
 import pykakasi
@@ -106,7 +107,7 @@ def clean_wordlist(words: list) -> list:
 
 
 # 5 - Make list of most frequent words
-def get_most_frequent_words(words: list, limit: int = 10) -> list:
+def get_most_frequent_words(words: list, limit: int = 10000) -> list:
     words = Counter(words).most_common(limit)
     return words
 
@@ -130,9 +131,13 @@ def english_to_japanese(word: str) -> str:
     # translator = Translator()
     # translation = translator.translate(word, src="en", dest="ja")
     # return translation.text
-
-    # Until we get the official Google Cloud Translate API working, return a placeholder
-    return "日本語"
+    # set environment variable to credentials file location
+    # TODO - convert to pathlib path
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "translatecreds.json"
+    translate_client = translate.Client()
+    target_language = "ja"
+    translation = translate_client.translate(word, target_language=target_language)
+    return translation["translatedText"]
 
 
 # 8 - Transliterate Japanese into hiragana, katakana, romaji
