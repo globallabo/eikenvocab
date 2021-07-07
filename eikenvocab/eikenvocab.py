@@ -14,7 +14,7 @@ import gspread
 from gspread.models import Cell
 from oauth2client.service_account import ServiceAccountCredentials
 from googletrans import Translator
-from google.cloud import translate_v2 as translate
+from google.cloud import translate_v2 as translate  # type: ignore # pylance complains about this
 import requests
 from bs4 import BeautifulSoup
 import pykakasi
