@@ -1,0 +1,23 @@
+{% extends "base.html" %} {% block content %} {% for word in wordlist %}
+<section class="flashcard-front">
+	<img class="logo" src="images/logo.png" alt="All Stars" />
+	<div class="content">
+		<div class="vocab-english">{{ word["english"] }}</div>
+		<div class="vocab-pronunciation">{{ word["pronunciation_hiragana"] }}</div>
+	</div>
+	<footer>
+		<div class="label">Grade 5 - {{ loop.index }}</div>
+		{# <img class="cornerstar" src="images/star.png" alt="" /> #}
+	</footer>
+</section>
+<section class="flashcard-back">
+	<img class="logo" src="images/logo.png" alt="All Stars" />
+	<div class="content">
+		<div class="vocab-translation">{{ word["translation_hiragana"] }}</div>
+	</div>
+	<footer>
+		<div class="label">Grade 5 - {{ loop.index }}</div>
+		{# <img class="cornerstar" src="images/star.png" alt="" /> #}
+	</footer>
+</section>
+{% endfor %} {% endblock content %}
