@@ -40,20 +40,22 @@ def make_wordlist(data: list[str]) -> list[dict]:
 
 
 # use jinja2 to render an HTML template for the flashcards
-def render_template(wordlist: list[dict]) -> str:
+def render_template(grade: str, wordlist: list[dict]) -> str:
     template_loader = jinja2.FileSystemLoader(searchpath="./templates/")
     template_env = jinja2.Environment(loader=template_loader)
     TEMPLATE_FILE = "cards.html"
     template = template_env.get_template(TEMPLATE_FILE)
     template_path = pathlib.Path(__file__).parent.absolute() / "templates/"
     static_path = pathlib.Path(__file__).parent.absolute() / "static/"
-    output_text = template.render(static_path=static_path, wordlist=wordlist)
+    output_text = template.render(
+        static_path=static_path, grade=grade, wordlist=wordlist
+    )
     return output_text
 
 
 # use weasyprint to render string of HTML into PDF
-def render_pdf(content: str):
-    filename = "card-test.pdf"
+def render_pdf(grade: str, content: str):
+    filename = f"grade-{grade}.pdf"
     # Create Weasyprint HTML object
     html = HTML(string=content)
     # Output PDF via Weasyprint
@@ -61,10 +63,15 @@ def render_pdf(content: str):
 
 
 def main():
-    data = get_data_for_grade("5")
-    wordlist = make_wordlist(data)
-    content = render_template(wordlist)
-    render_pdf(content)
+    # p2 and p1 are for Grades Pre-2 and Pre-1
+    grades = ["5", "4", "3", "p2", "2", "p1", "1"]
+    for grade in grades:
+        data = get_data_for_grade(grade)
+        # Use Pre-2, not p2 for flashcard labels
+        long_grade = grade.replace("p", "Pre-")
+        wordlist = make_wordlist(data)
+        content = render_template(grade=long_grade, wordlist=wordlist)
+        render_pdf(grade=grade, content=content)
 
 
 if __name__ == "__main__":
