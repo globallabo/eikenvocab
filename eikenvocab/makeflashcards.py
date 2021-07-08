@@ -65,14 +65,17 @@ def render_pdf(grade: str, content: str, output_path: str):
 def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
+    # grades = ["5", "4"]
     output_path = pathlib.Path(__file__).parent.parent.absolute() / "output/"
     for grade in grades:
+        print(f"Starting Grade {grade} ...")
         data = get_data_for_grade(grade)
         # Use Pre-2, not p2 for flashcard labels
         long_grade = grade.replace("p", "Pre-")
         wordlist = make_wordlist(data)
         content = render_template(grade=long_grade, wordlist=wordlist)
         render_pdf(grade=grade, content=content, output_path=output_path)
+        print(f"Finished Grade {grade}.")
 
 
 if __name__ == "__main__":
