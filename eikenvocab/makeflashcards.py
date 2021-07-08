@@ -54,8 +54,8 @@ def render_template(grade: str, wordlist: list[dict]) -> str:
 
 
 # use weasyprint to render string of HTML into PDF
-def render_pdf(grade: str, content: str):
-    filename = f"grade-{grade}.pdf"
+def render_pdf(grade: str, content: str, output_path: str):
+    filename = f"{output_path}/grade-{grade}.pdf"
     # Create Weasyprint HTML object
     html = HTML(string=content)
     # Output PDF via Weasyprint
@@ -65,40 +65,15 @@ def render_pdf(grade: str, content: str):
 def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
+    output_path = pathlib.Path(__file__).parent.parent.absolute() / "output/"
     for grade in grades:
         data = get_data_for_grade(grade)
         # Use Pre-2, not p2 for flashcard labels
         long_grade = grade.replace("p", "Pre-")
         wordlist = make_wordlist(data)
         content = render_template(grade=long_grade, wordlist=wordlist)
-        render_pdf(grade=grade, content=content)
+        render_pdf(grade=grade, content=content, output_path=output_path)
 
 
 if __name__ == "__main__":
     main()
-
-# print(len(wordlist))
-# pprint.pprint(wordlist[0:5])
-
-# print("Keys:")
-# print(data[0])
-# print("Values:")
-# print(data[1])
-# worddict = dict(zip(data[0], data[1]))
-# print("Dictionary:")
-# print(worddict)
-
-# templateLoader = jinja2.FileSystemLoader(searchpath="./templates/")
-# templateEnv = jinja2.Environment(loader=templateLoader)
-# TEMPLATE_FILE = "cards.html"
-# template = templateEnv.get_template(TEMPLATE_FILE)
-# template_path = pathlib.Path(__file__).parent.absolute() / "templates/"
-# static_path = pathlib.Path(__file__).parent.absolute() / "static/"
-# outputText = template.render(static_path=static_path, wordlist=wordlist)
-# filename = "card-test.pdf"
-
-# # print(outputText)
-# # Create Weasyprint HTML object
-# html = HTML(string=outputText)
-# # Output PDF via Weasyprint
-# html.write_pdf(filename)
