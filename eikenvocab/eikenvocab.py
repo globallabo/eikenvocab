@@ -128,6 +128,8 @@ def japanese_to_hiragana(word: str) -> str:
 
 # 9 - Output to Google Sheet (new worksheet)
 def write_gsheet(wordlist: list[dict], grade: str):
+    # sheetname = "Eiken Vocabulary"
+    sheetname = "Eiken Vocabulary (testing)"
     max_rows = len(wordlist) + 10
     max_cols = len(wordlist[0]) + 2
     credsfile = pathlib.Path(__file__).parent.parent.absolute() / "creds.json"
@@ -139,7 +141,7 @@ def write_gsheet(wordlist: list[dict], grade: str):
     ]
     creds = ServiceAccountCredentials.from_json_keyfile_name(credsfile, scope)
     client = gspread.authorize(creds)
-    vocabsheet = client.open("Eiken Vocabulary")
+    vocabsheet = client.open(sheetname)
     try:
         worksheet = vocabsheet.add_worksheet(
             title=f"grade_{grade}", rows=max_rows, cols=max_cols, index=0

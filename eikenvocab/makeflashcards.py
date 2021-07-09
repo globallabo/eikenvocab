@@ -12,6 +12,7 @@ from weasyprint import HTML
 # Get data from google Sheet (one grade at a time)
 def get_data_for_grade(grade: str) -> list[str]:
     # Fetch data from Google Sheet
+    sheetname = "Eiken Vocabulary"
     credsfile = pathlib.Path(__file__).parent.parent.absolute() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
@@ -22,7 +23,7 @@ def get_data_for_grade(grade: str) -> list[str]:
     creds = ServiceAccountCredentials.from_json_keyfile_name(credsfile, scope)
     client = gspread.authorize(creds)
     try:
-        sheet = client.open("Eiken Vocabulary").worksheet(f"grade_{grade}")
+        sheet = client.open(sheetname).worksheet(f"grade_{grade}")
         return sheet.get_all_values()
     except FileNotFoundError as fnf_error:
         print(fnf_error)
