@@ -4,6 +4,7 @@ import os
 import re
 from collections import Counter
 from datetime import datetime
+from typing import Optional
 
 # third party imports
 import fitz  # get text from PDFs
@@ -80,7 +81,7 @@ def clean_wordlist(words: list) -> list:
 
 
 # 5 - Make list of most frequent words
-def get_most_frequent_words(words: list, limit: int = 10000) -> list:
+def get_most_frequent_words(words: list, limit: Optional[int] = None) -> list:
     words = Counter(words).most_common(limit)
     return words
 
@@ -195,7 +196,7 @@ def main():
         input_path = base_path / f"grade_{grade}"
         words = string_to_words(pdfs_to_string(input_path=input_path))
         words = clean_wordlist(words)
-        words = get_most_frequent_words(words)
+        words = get_most_frequent_words(words=words, limit=10)
         wordlist = []
         for wordcount in words:
             word, count = wordcount
