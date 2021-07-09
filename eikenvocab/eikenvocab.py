@@ -1,25 +1,21 @@
-from PIL import Image
-import pytesseract
-import fitz
-import sys
+# standard library imports
 import pathlib
-import tempfile
-import pdf2image
 import os
 import re
 from collections import Counter
-import csv
+from datetime import datetime
+
+# third party imports
+import fitz  # get text from PDFs
 import enchant
 import gspread
 from gspread.models import Cell
 from oauth2client.service_account import ServiceAccountCredentials
-from googletrans import Translator
 from google.cloud import translate_v2 as translate  # type: ignore # pylance complains about this
 import requests
 from bs4 import BeautifulSoup
 import pykakasi
 import jaconv
-from datetime import datetime
 
 
 # Use the text layer in the PDF instead of OCR
