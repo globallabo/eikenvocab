@@ -12,15 +12,16 @@ from weasyprint import HTML
 # Get data from google Sheet (one grade at a time)
 def get_data_for_grade(grade: str) -> list[str]:
     # Fetch data from Google Sheet
+    credsfile = pathlib.Path(__file__).parent.parent.absolute() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive",
     ]
+    creds = ServiceAccountCredentials.from_json_keyfile_name(credsfile, scope)
+    client = gspread.authorize(creds)
     try:
-        creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
-        client = gspread.authorize(creds)
         sheet = client.open("Eiken Vocabulary").worksheet(f"grade_{grade}")
         return sheet.get_all_values()
     except FileNotFoundError as fnf_error:
@@ -65,7 +66,7 @@ def render_pdf(grade: str, content: str, output_path: str):
 def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
-    # grades = ["5", "4"]
+    # grades = ["5"]
     output_path = pathlib.Path(__file__).parent.parent.absolute() / "output/"
     for grade in grades:
         print(f"Starting Grade {grade} ...")

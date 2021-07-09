@@ -130,13 +130,14 @@ def japanese_to_hiragana(word: str) -> str:
 def write_gsheet(wordlist: list[dict], grade: str):
     max_rows = len(wordlist) + 10
     max_cols = len(wordlist[0]) + 2
+    credsfile = pathlib.Path(__file__).parent.parent.absolute() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive.file",
         "https://www.googleapis.com/auth/drive",
     ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(credsfile, scope)
     client = gspread.authorize(creds)
     vocabsheet = client.open("Eiken Vocabulary")
     try:
