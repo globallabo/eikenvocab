@@ -22,30 +22,7 @@ import jaconv
 from datetime import datetime
 
 
-# 1 - Convert PDFs to images
-# 2 - OCR images to text
-# def pdfs_to_string(
-#     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
-#     drop_first_and_last_pages: bool = True,
-# ) -> str:
-#     print("Starting PDF reading and OCR extraction ...")
-#     output_string = ""
-#     filelist = input_path.glob("*.pdf")
-#     for file in filelist:
-#         with tempfile.TemporaryDirectory() as output_path:
-#             pages = pdf2image.convert_from_path(
-#                 file, dpi=500, output_folder=output_path
-#             )
-#             if drop_first_and_last_pages:
-#                 # the first and last pages have no English, so drop them
-#                 pages = pages[1:-1]
-#             for page in pages:
-#                 output_string += pytesseract.image_to_string(page)
-#     print("Finished PDF reading and OCR extraction")
-#     return output_string
-
-
-# Try using the text layer in the PDF instead of OCR
+# Use the text layer in the PDF instead of OCR
 def pdfs_to_string(
     input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
@@ -210,52 +187,9 @@ def write_gsheet(wordlist: list[dict], grade: str):
 
 
 def main():
-    # words = [
-    #     ("mail", 1),
-    #     ("sell", 1),
-    #     ("something", 1),
-    #     ("pet", 1),
-    #     ("fever", 1),
-    #     ("there", 1),
-    #     ("father", 1),
-    #     ("your", 1),
-    #     ("here", 1),
-    #     ("be", 1),
-    #     ("is", 1),
-    #     ("are", 1),
-    #     ("was", 1),
-    #     ("being", 1),
-    #     ("been", 1),
-    #     ("go", 1),
-    #     ("goes", 1),
-    #     ("going", 1),
-    #     ("went", 1),
-    #     ("gone", 1),
-    #     ("have", 1),
-    #     ("has", 1),
-    #     ("having", 1),
-    #     ("had", 1),
-    #     ("walk", 1),
-    #     ("walks", 1),
-    #     ("walking", 1),
-    #     ("walked", 1),
-    #     ("work", 1),
-    #     ("works", 1),
-    #     ("working", 1),
-    #     ("worked", 1),
-    #     ("take", 1),
-    #     ("takes", 1),
-    #     ("taking", 1),
-    #     ("took", 1),
-    #     ("help", 1),
-    #     ("helps", 1),
-    #     ("helping", 1),
-    #     ("helped", 1),
-    # ]
-
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
-    # grades = ["5"]
+    # grades = ["1"]
     base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
     for grade in grades:
         print(f"Starting Grade {grade} ...")
@@ -279,16 +213,6 @@ def main():
                 "Translation (hiragana)": translation_hiragana,
             }
             wordlist.append(worddict)
-
-            # print(
-            #     f"Word: {word}, Count: {count}, pronunciation: {pronunciation}, Translation: {translation}, Hiragana: {hiragana}"
-            # )
-            # print(
-            #     f"Word: {word}, pronunciation (Katakana): {pronunciation_kata}, pronunciation (Hiragana): {pronunciation_hira}, Translation (Kanji): {translation_kanji}, Translation (Hiragana): {translation_hiragana}"
-            # )
-            # Necessary to prevent rate-limiting by the Google translate API
-            # time.sleep(5)
-        # print(*words, sep=", ")
         write_gsheet(wordlist=wordlist, grade=grade)
         print(f"Finished Grade {grade}.")
 
