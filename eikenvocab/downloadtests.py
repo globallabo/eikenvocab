@@ -1,5 +1,5 @@
 import requests
-import pathlib
+from pathlib import Path
 
 
 def download_file(url: str, path: str):
@@ -25,7 +25,7 @@ def scrape_eiken_tests(grades: list[str], base_path: str):
     sessions = ["1", "2", "3"]
     for grade in grades:
         download_path = base_path / f"grade_{grade}/"
-        pathlib.Path(download_path).mkdir(parents=True, exist_ok=True)
+        Path(download_path).mkdir(parents=True, exist_ok=True)
         print(f"Download Path: {download_path}")
         for year in years:
             for session in sessions:
@@ -44,7 +44,7 @@ def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
     # grades = ["1"]
-    base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
+    base_path = Path(__file__).parent.parent.absolute() / "data"
     scrape_eiken_tests(grades=grades, base_path=base_path)
 
 

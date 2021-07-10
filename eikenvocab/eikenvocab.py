@@ -1,5 +1,5 @@
 # standard library imports
-import pathlib
+from pathlib import Path
 import os
 import re
 from collections import Counter
@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Optional
 
 # third party imports
-import fitz  # get text from PDFs
+import fitz  # pyMuPDF - get text from PDFs
 import enchant
 import gspread
 from gspread.models import Cell
@@ -21,7 +21,7 @@ import jaconv
 
 # Use the text layer in the PDF instead of OCR
 def pdfs_to_string(
-    input_path: str = pathlib.Path(__file__).parent.parent.absolute() / "data/",
+    input_path: str = Path(__file__).parent.parent.absolute() / "data/",
     drop_first_and_last_pages: bool = True,
 ) -> str:
     # print("Starting PDF reading and text layer extraction ...")
@@ -133,7 +133,7 @@ def write_gsheet(wordlist: list[dict], grade: str):
     sheetname = "Eiken Vocabulary (testing)"
     max_rows = len(wordlist) + 10
     max_cols = len(wordlist[0]) + 2
-    credsfile = pathlib.Path(__file__).parent.parent.absolute() / "creds.json"
+    credsfile = Path(__file__).parent.parent.absolute() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
@@ -190,7 +190,7 @@ def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
     # grades = ["1"]
-    base_path = pathlib.Path(__file__).parent.parent.absolute() / "data"
+    base_path = Path(__file__).parent.parent.absolute() / "data"
     for grade in grades:
         print(f"Starting Grade {grade} ...")
         input_path = base_path / f"grade_{grade}"
