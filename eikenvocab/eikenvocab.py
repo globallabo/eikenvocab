@@ -17,6 +17,10 @@ import requests
 from bs4 import BeautifulSoup
 import pykakasi
 import jaconv
+import typer  # type: ignore # pylance complains about this
+
+
+app = typer.Typer(help="Eiken Vocabulary Flashcard Generator")
 
 
 def pdfs_to_string(
@@ -122,7 +126,7 @@ def get_most_frequent_words(
 
     Args:
         words (list[str]): A list of words to process
-        limit (Optional[int], optional): A limit on how many words to output. Defaults to None.
+        limit (Optional[int], optional): The maximum number of words per list. Defaults to None.
 
     Returns:
         list[tuple]: A tuple containing a word and its frequency within the input list.
@@ -285,11 +289,31 @@ def write_gsheet(wordlist: list[dict], grade: str):
     worksheet.update_cells(cells)
 
 
+@app.command()
 def makelists(
-    grades: list[str] = ["5", "4", "3", "p2", "2", "p1", "1"],
-    datapath: str = Path(__file__).parent.parent.absolute() / "data",
-    wordlimit: Optional[int] = None,
+    grades: list[str] = typer.Option(
+        ["5", "4", "3", "p2", "2", "p1", "1"],
+        "--grades",
+        "-g",
+        help="The list of grades to create lists for (one worksheet per grade).",
+    ),
+    datapath: str = typer.Option(
+        Path(__file__).parent.parent.absolute() / "data",
+        "--datapath",
+        "-d",
+        help="The path where the source PDFs are located.",
+    ),
+    wordlimit: Optional[int] = typer.Option(
+        None, "--wordlimit", "-l", help="The maximum number of words per list."
+    ),
 ):
+    """Make the wordlists in Google Sheets.
+
+    Args:
+        grades (list[str], optional): The list of grades to create lists for (one worksheet per grade). Defaults to ["5", "4", "3", "p2", "2", "p1", "1"].
+        datapath (str, optional): The path where the source PDFs are located. Defaults to Path(__file__).parent.parent.absolute()/"data".
+        wordlimit (Optional[int], optional): The maximum number of words per list. Defaults to None.
+    """
     for grade in grades:
         print(f"Starting Grade {grade} ...")
         input_path = datapath / f"grade_{grade}"
@@ -301,6 +325,7 @@ def makelists(
         print(f"Finished Grade {grade}.")
 
 
+@app.command()
 def makecards(
     grades: list[str] = ["5", "4", "3", "p2", "2", "p1", "1"],
     outputpath: str = Path(__file__).parent.parent.absolute() / "output",
@@ -316,4 +341,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    app()
