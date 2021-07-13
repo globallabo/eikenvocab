@@ -193,6 +193,34 @@ def japanese_to_hiragana(word: str) -> str:
     return hiragana
 
 
+def make_wordlist(words: list[tuple]) -> list[dict]:
+    """Make a list of words along with their associated pronunciations, translations, etc.
+
+    Args:
+        words (list[tuple]): A list of tuples containing words and their frequencies in the source material.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the vocabulary words, their frequencies, pronunciations and translations.
+    """
+    wordlist = []
+    for wordcount in words:
+        word, count = wordcount
+        pronunciation_kata = english_to_katakana(word)  # Katakana to Hiragana
+        pronunciation_hira = jaconv.kata2hira(pronunciation_kata)
+        translation_kanji = english_to_japanese(word)
+        translation_hiragana = japanese_to_hiragana(translation_kanji)
+        worddict = {
+            "Word": word,
+            "Frequency": count,
+            "Pronunciation (katakana)": pronunciation_kata,
+            "Pronunciation (hiragana)": pronunciation_hira,
+            "Translation (kanji)": translation_kanji,
+            "Translation (hiragana)": translation_hiragana,
+        }
+        wordlist.append(worddict)
+    return wordlist
+
+
 def write_gsheet(wordlist: list[dict], grade: str):
     """Create a worksheet within a Google Sheets document and write to it a list of words and their pronunciations and translations. Any existing worksheet with the same name will first be backed up.
 
@@ -257,35 +285,34 @@ def write_gsheet(wordlist: list[dict], grade: str):
     worksheet.update_cells(cells)
 
 
+def makelists(
+    grades: list[str] = ["5", "4", "3", "p2", "2", "p1", "1"],
+    datapath: str = Path(__file__).parent.parent.absolute() / "data",
+    wordlimit: Optional[int] = None,
+):
+    for grade in grades:
+        print(f"Starting Grade {grade} ...")
+        input_path = datapath / f"grade_{grade}"
+        words = string_to_words(pdfs_to_string(input_path=input_path))
+        words = clean_wordlist(words)
+        words = get_most_frequent_words(words=words, limit=wordlimit)
+        wordlist = make_wordlist(words=words)
+        write_gsheet(wordlist=wordlist, grade=grade)
+        print(f"Finished Grade {grade}.")
+
+
+def makecards(
+    grades: list[str] = ["5", "4", "3", "p2", "2", "p1", "1"],
+    outputpath: str = Path(__file__).parent.parent.absolute() / "output",
+):
+    pass
+
+
 def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
     # grades = ["1"]
-    base_path = Path(__file__).parent.parent.absolute() / "data"
-    for grade in grades:
-        print(f"Starting Grade {grade} ...")
-        input_path = base_path / f"grade_{grade}"
-        words = string_to_words(pdfs_to_string(input_path=input_path))
-        words = clean_wordlist(words)
-        words = get_most_frequent_words(words=words, limit=10)
-        wordlist = []
-        for wordcount in words:
-            word, count = wordcount
-            pronunciation_kata = english_to_katakana(word)  # Katakana to Hiragana
-            pronunciation_hira = jaconv.kata2hira(pronunciation_kata)
-            translation_kanji = english_to_japanese(word)
-            translation_hiragana = japanese_to_hiragana(translation_kanji)
-            worddict = {
-                "Word": word,
-                "Frequency": count,
-                "Pronunciation (katakana)": pronunciation_kata,
-                "Pronunciation (hiragana)": pronunciation_hira,
-                "Translation (kanji)": translation_kanji,
-                "Translation (hiragana)": translation_hiragana,
-            }
-            wordlist.append(worddict)
-        write_gsheet(wordlist=wordlist, grade=grade)
-        print(f"Finished Grade {grade}.")
+    makelists(grades=["5"], wordlimit=10)
 
 
 if __name__ == "__main__":
