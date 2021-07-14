@@ -13,7 +13,7 @@ from weasyprint import HTML
 def get_data_for_grade(grade: str) -> list[str]:
     # Fetch data from Google Sheet
     sheetname = "Eiken Vocabulary"
-    credsfile = Path(__file__).parent.parent.absolute() / "creds.json"
+    credsfile = Path(__file__).parent.parent.resolve() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
         "https://www.googleapis.com/auth/spreadsheets",
@@ -47,8 +47,8 @@ def render_template(grade: str, wordlist: list[dict]) -> str:
     template_env = jinja2.Environment(loader=template_loader)
     TEMPLATE_FILE = "cards.html"
     template = template_env.get_template(TEMPLATE_FILE)
-    template_path = Path(__file__).parent.absolute() / "templates/"
-    static_path = Path(__file__).parent.absolute() / "static/"
+    template_path = Path(__file__).parent.resolve() / "templates/"
+    static_path = Path(__file__).parent.resolve() / "static/"
     output_text = template.render(
         static_path=static_path, grade=grade, wordlist=wordlist
     )
@@ -68,7 +68,7 @@ def main():
     # p2 and p1 are for Grades Pre-2 and Pre-1
     grades = ["5", "4", "3", "p2", "2", "p1", "1"]
     # grades = ["5"]
-    output_path = Path(__file__).parent.parent.absolute() / "output/"
+    output_path = Path(__file__).parent.parent.resolve() / "output/"
     for grade in grades:
         print(f"Starting Grade {grade} ...")
         data = get_data_for_grade(grade)
