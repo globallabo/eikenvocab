@@ -293,9 +293,10 @@ def write_gsheet(wordlist: list[dict], grade: str):
 def makelists(
     grades: list[str] = typer.Option(
         ["5", "4", "3", "p2", "2", "p1", "1"],
-        "--grades",
+        "--grade",
         "-g",
-        help="The list of grades to create lists for (one worksheet per grade).",
+        help="Specify a grade to create a list for. Can be repeated for multiple grades.",
+        show_default="all grades",
     ),
     datapath: str = typer.Option(
         Path(__file__).parent.parent.absolute() / "data",
@@ -304,15 +305,15 @@ def makelists(
         help="The path where the source PDFs are located.",
     ),
     wordlimit: Optional[int] = typer.Option(
-        None, "--wordlimit", "-l", help="The maximum number of words per list."
+        None,
+        "--wordlimit",
+        "-l",
+        help="The maximum number of words per list.",
+        show_default="no limit",
     ),
 ):
-    """Make the wordlists in Google Sheets.
-
-    Args:
-        grades (list[str], optional): The list of grades to create lists for (one worksheet per grade). Defaults to ["5", "4", "3", "p2", "2", "p1", "1"].
-        datapath (str, optional): The path where the source PDFs are located. Defaults to Path(__file__).parent.parent.absolute()/"data".
-        wordlimit (Optional[int], optional): The maximum number of words per list. Defaults to None.
+    """
+    Make the wordlists in Google Sheets.
     """
     for grade in grades:
         print(f"Starting Grade {grade} ...")
@@ -327,9 +328,23 @@ def makelists(
 
 @app.command()
 def makecards(
-    grades: list[str] = ["5", "4", "3", "p2", "2", "p1", "1"],
-    outputpath: str = Path(__file__).parent.parent.absolute() / "output",
+    grades: list[str] = typer.Option(
+        ["5", "4", "3", "p2", "2", "p1", "1"],
+        "--grades",
+        "-g",
+        help="Specify a grade to create a list for. Can be repeated for multiple grades.",
+        show_default="all grades",
+    ),
+    outputpath: str = typer.Option(
+        Path(__file__).parent.parent.absolute() / "output",
+        "--outputpath",
+        "-o",
+        help="The path where the PDF files will be saved.",
+    ),
 ):
+    """
+    Make the flashcard PDFs from the data in Google Sheets.
+    """
     pass
 
 
