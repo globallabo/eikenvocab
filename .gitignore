@@ -3,3 +3,4 @@ output.txt
 data/*
 translatecreds.json
 output
+__pycache__/
