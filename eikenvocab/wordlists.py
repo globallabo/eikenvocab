@@ -161,8 +161,9 @@ def english_to_japanese(word: str) -> str:
     Returns:
         str: A Japanese translation of the English word.
     """
-    # TODO - convert to pathlib path
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "translatecreds.json"
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+        Path(__file__).parent.parent.resolve() / "translatecreds.json"
+    )
     translate_client = translate.Client()
     target_language = "ja"
     translation = translate_client.translate(word, target_language=target_language)
