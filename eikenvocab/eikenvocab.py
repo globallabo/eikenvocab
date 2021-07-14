@@ -83,12 +83,5 @@ def makecards(
         print(f"Finished Grade {grade}.")
 
 
-def main():
-    # p2 and p1 are for Grades Pre-2 and Pre-1
-    grades = ["5", "4", "3", "p2", "2", "p1", "1"]
-    # grades = ["1"]
-    makelists(grades=["5"], wordlimit=10)
-
-
 if __name__ == "__main__":
     app()
