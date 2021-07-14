@@ -12,7 +12,7 @@ import enchant
 import gspread
 from gspread.models import Cell
 from oauth2client.service_account import ServiceAccountCredentials
-from google.cloud import translate_v2 as translate  # type: ignore # pylance complains about this
+from google.cloud import translate_v2 as translate
 import requests
 from bs4 import BeautifulSoup
 import pykakasi
@@ -161,10 +161,6 @@ def english_to_japanese(word: str) -> str:
     Returns:
         str: A Japanese translation of the English word.
     """
-    # translator = Translator()
-    # translation = translator.translate(word, src="en", dest="ja")
-    # return translation.text
-    # set environment variable to credentials file location
     # TODO - convert to pathlib path
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "translatecreds.json"
     translate_client = translate.Client()
