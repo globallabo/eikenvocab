@@ -6,12 +6,31 @@ from typing import Optional
 import typer
 
 # local imports
-import downloadtests
+import tests
 import flashcards
 import wordlists
 
 
 app = typer.Typer(help="Eiken Vocabulary Flashcard Generator")
+
+
+@app.command()
+def downloadtests(
+    grades: list[str] = typer.Option(
+        ["5", "4", "3", "p2", "2", "p1", "1"],
+        "--grade",
+        "-g",
+        help="Specify a grade of test to download. Can be repeated for multiple grades.",
+        show_default="all grades",
+    ),
+    downloadpath: str = typer.Option(
+        Path(__file__).parent.parent.resolve() / "data",
+        "--datapath",
+        "-d",
+        help="The path where the test PDFs should be saved.",
+    ),
+):
+    tests.scrape_eiken_tests(grades=grades, base_path=downloadpath)
 
 
 @app.command()
