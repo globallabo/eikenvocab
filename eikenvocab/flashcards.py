@@ -57,6 +57,8 @@ def render_template(grade: str, wordlist: list[dict]) -> str:
 
 # use weasyprint to render string of HTML into PDF
 def render_pdf(grade: str, content: str, output_path: str):
+    output_path = Path(output_path).resolve()
+    Path(output_path).mkdir(parents=True, exist_ok=True)
     filename = f"{output_path}/grade-{grade}.pdf"
     # Create Weasyprint HTML object
     html = HTML(string=content)
