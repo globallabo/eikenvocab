@@ -18,7 +18,8 @@ def download_file(url: str, path: str):
         print("Cannot connect.")
 
 
-def scrape_eiken_tests(grades: list[str], base_path: str):
+def scrape_eiken_tests(grades: list[str], path: str):
+    base_path = Path(path).resolve()
     base_url = "https://www.eiken.or.jp/eiken/exam/"
     years = ["2021", "2020"]
     # Every year has three test sessions (Summer, Fall, Winter)
