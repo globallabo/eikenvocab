@@ -1,5 +1,6 @@
 # standard library imports
 from pathlib import Path
+import itertools
 import pprint
 
 # third party imports
@@ -7,6 +8,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import jinja2
 from weasyprint import HTML
+import fitz  # pyMuPDF - get text from PDFs
 
 
 # Get data from google Sheet (one grade at a time)
@@ -56,7 +58,7 @@ def render_template(grade: str, wordlist: list[dict]) -> str:
 
 
 # use weasyprint to render string of HTML into PDF
-def render_pdf(grade: str, content: str, output_path: str):
+def render_pdf(grade: str, content: str, output_path: str) -> str:
     output_path = Path(output_path).resolve()
     Path(output_path).mkdir(parents=True, exist_ok=True)
     filename = f"{output_path}/grade-{grade}.pdf"
@@ -64,6 +66,39 @@ def render_pdf(grade: str, content: str, output_path: str):
     html = HTML(string=content)
     # Output PDF via Weasyprint
     html.write_pdf(filename)
+    return filename
+
+
+# use pymupdf (fitz) to reorder pages of the flashcards to print two per page
+# TODO - how to handle truncated pages due to an odd number of pages?
+def reorder_pdf(filename: str):
+    doc = fitz.open(filename)
+    pagenums = list(range(len(doc)))
+    # print(pagenums)
+    # first, get separate lists of the even and odd page numbers,
+    #  grouped into tuples of two at a time
+    evens = []
+    odds = []
+    for pagenum in pagenums:
+        if pagenum % 2 == 0:
+            evens.append(pagenum)
+        else:
+            odds.append(pagenum)
+    pairedevenlist = []
+    for even1, even2 in zip(*[iter(evens)] * 2):
+        pairedevenlist.append((even1, even2))
+    pairedoddlist = []
+    for odd1, odd2 in zip(*[iter(odds)] * 2):
+        pairedoddlist.append((odd1, odd2))
+    # next, zip the evens and odds together
+    newpairedlist = list(zip(pairedevenlist, pairedoddlist))
+    # then flatten the list, which is currently tuples within tuples
+    flatlist = list(itertools.chain(*itertools.chain(*newpairedlist)))
+    # print(flatlist)
+    # set the new page order
+    doc.select(flatlist)
+    tmpfile = Path(f"{filename}.tmp.pdf")
+    doc.save(tmpfile)
 
 
 def main():
