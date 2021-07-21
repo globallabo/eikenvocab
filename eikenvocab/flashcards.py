@@ -143,8 +143,10 @@ def reorder_pdf(filename: str):
     flatlist = list(itertools.chain(*itertools.chain(*newpairedlist)))
     # set the new page order
     doc.select(flatlist)
-    tmpfile = Path(f"{filename}.tmp.pdf")
-    doc.save(tmpfile)
+    # save the result to a new file (overwriting is problematic)
+    newfilename = str(Path(filename).stem) + "-reordered.pdf"
+    newpath = Path(filename).parent / newfilename
+    doc.save(newpath)
 
 
 def main():
