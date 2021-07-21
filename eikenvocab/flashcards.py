@@ -100,14 +100,23 @@ def render_pdf(grade: str, content: str, output_path: str) -> str:
     return filename
 
 
-# TODO - how to handle truncated pages due to an odd number of pages?
 def reorder_pdf(filename: str):
-    """Reorder the pages in the flashcard PDF so we can print two per postcard page, duplex, while keeping the front and back aligned.
+    """Reorder the pages in the flashcard PDF so we can print
+    two per postcard page, duplex, while keeping the front
+    and back aligned.
 
     Args:
         filename (str): The PDF file to be reordered.
     """
     doc = fitz.open(filename)
+    # For the 2-per-page print format to work, the number of pages
+    #  must be a multiple of 4
+    if len(doc) % 4 != 0:
+        # get the page dimensions from the first page
+        width, height = doc[0].MediaBoxSize
+        # add two new pages to the end of the document
+        doc.new_page(pno=-1, width=width, height=height)
+        doc.new_page(pno=-1, width=width, height=height)
     pagenums = list(range(len(doc)))
     # print(pagenums)
     # first, get separate lists of the even and odd page numbers,
@@ -121,15 +130,17 @@ def reorder_pdf(filename: str):
             odds.append(pagenum)
     pairedevenlist = []
     for even1, even2 in zip(*[iter(evens)] * 2):
+        # for even1, even2 in itertools.zip_longest(*[iter(evens)] * 2):
         pairedevenlist.append((even1, even2))
     pairedoddlist = []
     for odd1, odd2 in zip(*[iter(odds)] * 2):
+        # for odd1, odd2 in itertools.zip_longest(*[iter(odds)] * 2):
         pairedoddlist.append((odd1, odd2))
     # next, zip the evens and odds together
     newpairedlist = list(zip(pairedevenlist, pairedoddlist))
+    # newpairedlist = list(itertools.zip_longest(pairedevenlist, pairedoddlist))
     # then flatten the list, which is currently tuples within tuples
     flatlist = list(itertools.chain(*itertools.chain(*newpairedlist)))
-    # print(flatlist)
     # set the new page order
     doc.select(flatlist)
     tmpfile = Path(f"{filename}.tmp.pdf")
