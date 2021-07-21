@@ -3,6 +3,12 @@ from pathlib import Path
 
 
 def download_file(url: str, path: str):
+    """Download a file from the web.
+
+    Args:
+        url (str): The URL of the file to download.
+        path (str): The local path where the file will be saved.
+    """
     try:
         with requests.get(url) as response:
             try:
@@ -19,6 +25,12 @@ def download_file(url: str, path: str):
 
 
 def scrape_eiken_tests(grades: list[str], path: str):
+    """Scrape the Eiken site to download test PDFs.
+
+    Args:
+        grades (list[str]): A list of the grades to include.
+        path (str): The local path where the files will be saved.
+    """
     base_path = Path(path).resolve()
     base_url = "https://www.eiken.or.jp/eiken/exam/"
     years = ["2021", "2020"]

@@ -11,8 +11,15 @@ from weasyprint import HTML
 import fitz  # pyMuPDF - get text from PDFs
 
 
-# Get data from google Sheet (one grade at a time)
-def get_data_for_grade(grade: str) -> list[str]:
+def get_data_for_grade(grade: str) -> list[list[str]]:
+    """Get data for a grade level from a Google Sheet
+
+    Args:
+        grade (str): The grade level of the data to get.
+
+    Returns:
+        list[str]: The contents of the sheet in list form (two-dimensional).
+    """
     # Fetch data from Google Sheet
     sheetname = "Eiken Vocabulary"
     credsfile = Path(__file__).parent.parent.resolve() / "creds.json"
@@ -32,8 +39,15 @@ def get_data_for_grade(grade: str) -> list[str]:
         return []
 
 
-# create a list of dictionaries to loop over for each card
-def make_wordlist(data: list[str]) -> list[dict]:
+def make_wordlist(data: list[list[str]]) -> list[dict]:
+    """Create a list of dictionaries to hold the wordlist data.
+
+    Args:
+        data (list[str]): The content from a Google Sheet in list form (two-dimensional).
+
+    Returns:
+        list[dict]: A list of dictionaries containing the word and pronunciation, translation, etc.
+    """
     wordlist = []
     # the first row of the data is the spreadsheet header, use as keys
     keys = data[0]
@@ -43,8 +57,16 @@ def make_wordlist(data: list[str]) -> list[dict]:
     return wordlist
 
 
-# use jinja2 to render an HTML template for the flashcards
 def render_template(grade: str, wordlist: list[dict]) -> str:
+    """Render HTML from a jinja2 template.
+
+    Args:
+        grade (str): The grade level of the content.
+        wordlist (list[dict]): The list of words and their pronunciations, translations, etc.
+
+    Returns:
+        str: The rendered HTML content.
+    """
     template_loader = jinja2.FileSystemLoader(searchpath="./templates/")
     template_env = jinja2.Environment(loader=template_loader)
     TEMPLATE_FILE = "cards.html"
@@ -57,8 +79,17 @@ def render_template(grade: str, wordlist: list[dict]) -> str:
     return output_text
 
 
-# use weasyprint to render string of HTML into PDF
 def render_pdf(grade: str, content: str, output_path: str) -> str:
+    """Render the PDF from the HTML contents.
+
+    Args:
+        grade (str): The grade level of the content.
+        content (str): The HTML content.
+        output_path (str): The path where the resulting PDF will be saved.
+
+    Returns:
+        str: Returns the filename of the output PDF.
+    """
     output_path = Path(output_path).resolve()
     Path(output_path).mkdir(parents=True, exist_ok=True)
     filename = f"{output_path}/grade-{grade}.pdf"
@@ -69,9 +100,13 @@ def render_pdf(grade: str, content: str, output_path: str) -> str:
     return filename
 
 
-# use pymupdf (fitz) to reorder pages of the flashcards to print two per page
 # TODO - how to handle truncated pages due to an odd number of pages?
 def reorder_pdf(filename: str):
+    """Reorder the pages in the flashcard PDF so we can print two per postcard page, duplex, while keeping the front and back aligned.
+
+    Args:
+        filename (str): The PDF file to be reordered.
+    """
     doc = fitz.open(filename)
     pagenums = list(range(len(doc)))
     # print(pagenums)

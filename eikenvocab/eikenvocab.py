@@ -30,6 +30,9 @@ def downloadtests(
         help="The path where the test PDFs should be saved.",
     ),
 ):
+    """
+    Download the test PDFs from the web.
+    """
     tests.scrape_eiken_tests(grades=grades, path=downloadpath)
 
 
