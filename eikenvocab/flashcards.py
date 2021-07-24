@@ -143,10 +143,12 @@ def reorder_pdf(filename: str):
     flatlist = list(itertools.chain(*itertools.chain(*newpairedlist)))
     # set the new page order
     doc.select(flatlist)
-    # save the result to a new file (overwriting is problematic)
+    # save the result to a new file (overwriting with pymupdf is problematic)
     newfilename = str(Path(filename).stem) + "-reordered.pdf"
     newpath = Path(filename).parent / newfilename
     doc.save(newpath)
+    # replace the normal-order file with the reordered one
+    newpath.replace(filename)
 
 
 def main():
