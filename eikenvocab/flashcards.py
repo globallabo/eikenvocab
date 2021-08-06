@@ -18,7 +18,7 @@ def get_data_for_grade(grade: str) -> list[list[str]]:
         grade (str): The grade level of the data to get.
 
     Returns:
-        list[str]: The contents of the sheet in list form (two-dimensional).
+        list[list[str]]: The contents of the sheet in list form (two-dimensional).
     """
     # Fetch data from Google Sheet
     sheetname = "Eiken Vocabulary"
