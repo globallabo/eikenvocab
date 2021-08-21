@@ -21,7 +21,7 @@ def get_data_for_grade(grade: str) -> list[list[str]]:
         list[list[str]]: The contents of the sheet in list form (two-dimensional).
     """
     # Fetch data from Google Sheet
-    sheetname = "Eiken Vocabulary"
+    sheetname = "Eiken Vocabulary (final)"
     credsfile = Path(__file__).parent.parent.resolve() / "creds.json"
     scope = [
         "https://spreadsheets.google.com/feeds",
