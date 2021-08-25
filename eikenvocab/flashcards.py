@@ -51,10 +51,35 @@ def make_wordlist(data: list[list[str]]) -> list[dict]:
     wordlist = []
     # the first row of the data is the spreadsheet header, use as keys
     keys = data[0]
+    keys.insert(0, "ID")
     # loop over the rest of the data, excluding the first row
-    for word in data[1:]:
+    for count, word in enumerate(data[1:], start=1):
+        word.insert(0, count)
         wordlist.append(dict(zip(keys, word)))
     return wordlist
+
+
+def make_paired_wordlist(wordlist: list[dict]) -> list[tuple[dict, dict]]:
+    """Convert a list of word dictionaries into a list of tuples,
+    each with a pair of word dictionaries. This is so that we can
+    have two flashcards per output page, while being able to collate
+    fronts and backs.
+
+    Args:
+        wordlist (list[dict]): The list of words and their pronunciations, translations, etc.
+
+    Returns:
+        list[tuple[dict, dict]: The same wordlist, only organized into tuple-d pairs of dictionaries.
+    """
+    # This would otherwise discard the last element of an oddly-numbered list
+    if len(wordlist) % 2 != 0:
+        wordlist.append(None)
+    paired_wordlist = []
+    # group elements of the list, two at a time, in tuples
+    # https://docs.python.org/3/library/functions.html#zip
+    for word1, word2 in zip(*[iter(wordlist)] * 2):
+        paired_wordlist.append((word1, word2))
+    return paired_wordlist
 
 
 def render_template(grade: str, wordlist: list[dict]) -> str:
@@ -103,7 +128,7 @@ def render_pdf(grade: str, content: str, output_path: str) -> str:
 def reorder_pdf(filename: str):
     """Reorder the pages in the flashcard PDF so we can print
     two per postcard page, duplex, while keeping the front
-    and back aligned.
+    and back aligned. *NO LONGER NEEDED*
 
     Args:
         filename (str): The PDF file to be reordered.
