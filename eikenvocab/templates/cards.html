@@ -1,25 +1,48 @@
-{% extends "base.html" %} {% block content %} {% for word in wordlist %}
+{% extends "base.html" %} {% block content %} {% for word1, word2 in wordlist %}
 <section class="flashcard-front">
-  <img class="logo" src="images/logo.png" alt="All Stars" />
-  <div class="content">
-    <div class="vocab-english">{{ word["Word"] }}</div>
-    <div class="vocab-pronunciation">
-      {{ word["Pronunciation (hiragana)"] }}
+  <div class="word">
+    <img class="logo" src="images/logo.png" alt="All Stars" />
+    <div class="content">
+      <div class="vocab-english">{{ word1["Word"] }}</div>
+      <div class="vocab-pronunciation">
+        {{ word1["Pronunciation (hiragana)"] }}
+      </div>
     </div>
+    <footer>
+      <div class="label">{{ grade }} - {{ word1["ID"] }}</div>
+    </footer>
   </div>
-  <footer>
-    <div class="label">{{ grade }} - {{ loop.index }}</div>
-    {# <img class="cornerstar" src="images/star.png" alt="" /> #}
-  </footer>
+  <div class="word">
+    <img class="logo" src="images/logo.png" alt="All Stars" />
+    <div class="content">
+      <div class="vocab-english">{{ word2["Word"] }}</div>
+      <div class="vocab-pronunciation">
+        {{ word2["Pronunciation (hiragana)"] }}
+      </div>
+    </div>
+    <footer>
+      <div class="label">{{ grade }} - {{ word2["ID"] }}</div>
+    </footer>
+  </div>
 </section>
 <section class="flashcard-back">
-  <img class="logo" src="images/logo.png" alt="All Stars" />
-  <div class="content">
-    <div class="vocab-translation">{{ word["Translation (hiragana)"] }}</div>
+  <div class="word">
+    <img class="logo" src="images/logo.png" alt="All Stars" />
+    <div class="content">
+      <div class="vocab-translation">{{ word1["Translation (hiragana)"] }}</div>
+    </div>
+    <footer>
+      <div class="label">{{ grade }} - {{ word1["ID"] }}</div>
+    </footer>
   </div>
-  <footer>
-    <div class="label">{{ grade }} - {{ loop.index }}</div>
-    {# <img class="cornerstar" src="images/star.png" alt="" /> #}
-  </footer>
+  <div class="word">
+    <img class="logo" src="images/logo.png" alt="All Stars" />
+    <div class="content">
+      <div class="vocab-translation">{{ word2["Translation (hiragana)"] }}</div>
+    </div>
+    <footer>
+      <div class="label">{{ grade }} - {{ word2["ID"] }}</div>
+    </footer>
+  </div>
 </section>
 {% endfor %} {% endblock content %}

@@ -1,5 +1,5 @@
 @page {
-  size: 148mm 100mm;
+  size: 100mm 148mm;
   margin: 0;
 }
 
@@ -19,93 +19,52 @@
 section {
   page-break-after: always;
   page-break-inside: avoid;
-  /* display: flex;
+  height: 148mm;
+  width: 100mm;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: flex-start; */
+}
+
+.word {
+  height: 74mm;
+  width: 100mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .content {
-  height: 70mm;
-  width: 138mm;
-  margin: 5mm;
+  width: 98mm;
+  margin: 2mm;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* align-items: stretch; */
   align-content: center;
 }
 img.logo {
-  height: 10mm;
-  width: 10mm;
-}
-img.logo-rotated {
-  margin: 5mm;
-  height: 23mm;
-  width: 10mm;
+  height: 5mm;
+  width: 5mm;
 }
 .vocab-english,
 .vocab-pronunciation,
 .vocab-translation {
-  /* height: 70mm;
-	width: 138mm;
-	margin: 5mm; */
-  /* display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center; */
   text-align: center;
 }
 .vocab-english {
   font-family: "ZNuscriptHeavy";
-  font-size: 65pt;
+  font-size: 37.5pt;
 }
 .vocab-pronunciation {
   font-family: "UDDigiKyokashoNK-R";
-  font-size: 20pt;
-  /* line-height: 1.2em;
-	align-content: center; */
+  font-size: 10pt;
 }
 .vocab-translation {
   font-family: "UDDigiKyokashoNK-R";
-  font-size: 50pt;
-  /* line-height: 1.2em;
-	align-content: center; */
-}
-.vocab-word ul {
-  font-size: 55pt;
-  text-align: left;
-  padding-left: 10mm;
-}
-.vocab-word ul li {
-  list-style: none;
-}
-.vocab-word ul li:before {
-  /* For a round bullet */
-  content: "\2022";
-  display: block;
-  position: relative;
-  max-width: 0;
-  max-height: 0;
-  left: -0.7em;
-  top: 0.1em;
-  color: orange;
-  font-family: sans-serif;
-  font-size: 40pt;
+  font-size: 25pt;
 }
 
 footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-end;
-  font-family: "ZNuscriptHeavy";
-}
-footer img.cornerstar {
-  width: 5mm;
+  height: 5mm;
+  width: 100mm;
 }
