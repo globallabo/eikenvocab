@@ -26,7 +26,9 @@ section {
   justify-content: space-between;
 }
 
-.word {
+.card {
+  /* The height here determines the gap between cards.
+  74mm has no gap. */
   height: 74mm;
   width: 100mm;
   display: flex;

@@ -1,6 +1,6 @@
 {% extends "base.html" %} {% block content %} {% for word1, word2 in wordlist %}
 <section class="flashcard-front">
-  <div class="word">
+  <div class="card">
     <img class="logo" src="images/logo.png" alt="All Stars" />
     <div class="content">
       <div class="vocab-english">{{ word1["Word"] }}</div>
@@ -12,7 +12,7 @@
       <div class="label">{{ grade }} - {{ word1["ID"] }}</div>
     </footer>
   </div>
-  <div class="word">
+  <div class="card">
     <img class="logo" src="images/logo.png" alt="All Stars" />
     <div class="content">
       <div class="vocab-english">{{ word2["Word"] }}</div>
@@ -26,7 +26,7 @@
   </div>
 </section>
 <section class="flashcard-back">
-  <div class="word">
+  <div class="card">
     <img class="logo" src="images/logo.png" alt="All Stars" />
     <div class="content">
       <div class="vocab-translation">{{ word1["Translation (hiragana)"] }}</div>
@@ -35,7 +35,7 @@
       <div class="label">{{ grade }} - {{ word1["ID"] }}</div>
     </footer>
   </div>
-  <div class="word">
+  <div class="card">
     <img class="logo" src="images/logo.png" alt="All Stars" />
     <div class="content">
       <div class="vocab-translation">{{ word2["Translation (hiragana)"] }}</div>
