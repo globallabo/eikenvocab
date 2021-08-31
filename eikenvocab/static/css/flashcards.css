@@ -29,7 +29,7 @@ section {
 .card {
   /* The height here determines the gap between cards.
   74mm has no gap. */
-  height: 74mm;
+  height: 68mm;
   width: 100mm;
   display: flex;
   flex-direction: column;
