@@ -36,6 +36,10 @@ section {
   justify-content: space-between;
 }
 
+hr {
+  width: 80mm;
+  margin: auto;
+}
 .content {
   width: 98mm;
   margin: 2mm;
