@@ -161,7 +161,7 @@ def english_to_japanese(word: str) -> str:
     Returns:
         str: A Japanese translation of the English word.
     """
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = (
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(
         Path(__file__).parent.parent.resolve() / "translatecreds.json"
     )
     translate_client = translate.Client()
