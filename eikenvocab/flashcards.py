@@ -1,6 +1,7 @@
 # standard library imports
 from pathlib import Path
 import itertools
+import re
 import pprint
 
 # third party imports
@@ -9,6 +10,20 @@ from oauth2client.service_account import ServiceAccountCredentials
 import jinja2
 from weasyprint import HTML
 import fitz  # pyMuPDF - get text from PDFs
+
+
+def replace_blank(string: str) -> str:
+    blank_regex = "([_])\w+"
+    new_blank = '<span class="blank">____</span>'
+    return re.sub(blank_regex, new_blank, string)
+
+
+def replace_all_blanks(wordlist: list[dict]) -> list[dict]:
+    for worddict in wordlist:
+        for key, value in worddict.items():
+            if isinstance(value, str):
+                worddict[key] = replace_blank(value)
+    return wordlist
 
 
 def get_data_for_grade(grade: str) -> list[list[str]]:

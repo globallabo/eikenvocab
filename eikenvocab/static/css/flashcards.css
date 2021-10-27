@@ -70,6 +70,16 @@ img.logo {
   font-size: 25pt;
 }
 
+.vocab-english .blank {
+  letter-spacing: -8pt;
+  margin-right: 4pt;
+}
+.vocab-pronunciation .blank,
+.vocab-translation .blank {
+  letter-spacing: -2pt;
+  margin-right: 2pt;
+}
+
 footer {
   height: 5mm;
   width: 100mm;

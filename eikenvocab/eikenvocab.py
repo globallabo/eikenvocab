@@ -100,6 +100,8 @@ def makecards(
         # Use Pre-2, not p2 for flashcard labels
         long_grade = grade.replace("p", "Pre-")
         wordlist = flashcards.make_wordlist(data)
+        # Make sure to replace all blanks with ones that work in the template
+        wordlist = flashcards.replace_all_blanks(wordlist)
         pairedwordlist = flashcards.make_paired_wordlist(wordlist=wordlist)
         content = flashcards.render_template(grade=long_grade, wordlist=pairedwordlist)
         outfilename = flashcards.render_pdf(
