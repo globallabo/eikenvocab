@@ -4,3 +4,4 @@ data/*
 translatecreds.json
 output
 __pycache__/
+.vscode

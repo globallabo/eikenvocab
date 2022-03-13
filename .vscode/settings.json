@@ -1,4 +1,0 @@
-{
-    "python.pythonPath": "/home/chris/.virtualenvs/eikenvocab/bin/python",
-    "python.analysis.extraPaths": ["./eikenvocab"]
-}
