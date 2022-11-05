@@ -1,5 +1,7 @@
 # eikenvocab
 
+![Example flashcard output](/eikenvocab.png "Example flashcard output")
+
 eikenvocab is a project whose goal is to automatically generate flashcards based on the most frequently occurring words in an English test. It will allow you to download tests from the web, scrape them for the most frequent English words, get Japanese pronunciation and translations for those words, export that data to a Google Sheet and then use that data to create PDFs of your final flashcards.
 
 ## Usage
